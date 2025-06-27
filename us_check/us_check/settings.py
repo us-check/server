@@ -1,6 +1,9 @@
 import os
-
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -15,14 +18,14 @@ SECRET_KEY = 'django-insecure-b8h8a4b(^*-p3*_@_cc@@a3d0$__a6trf3kdr-$(9mmsttb^v!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-SERVER_ADDRESS = os.environ.get('SERVER_ADDRESS')
-CLIENT_ADDRESS = os.environ.get('CLIENT_ADDRESS')
+SERVER_ADDRESS = os.environ.get('SERVER_ADDRESS', 'localhost')
+CLIENT_ADDRESS = os.environ.get('CLIENT_ADDRESS', 'http://localhost:3000')
 
-ALLOWED_HOSTS = [SERVER_ADDRESS, ]
+ALLOWED_HOSTS = [SERVER_ADDRESS, '127.0.0.1', 'localhost']
 
-CORS_ALLOWED_ORIGINS = [CLIENT_ADDRESS, ]
+CORS_ALLOWED_ORIGINS = [CLIENT_ADDRESS]
 
-CSRF_TRUSTED_ORIGINS = [CLIENT_ADDRESS, ]
+CSRF_TRUSTED_ORIGINS = [CLIENT_ADDRESS]
 
 # Application definition
 
