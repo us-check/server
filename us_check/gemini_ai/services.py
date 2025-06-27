@@ -6,8 +6,9 @@ import json
 from typing import List, Dict, Optional
 from django.conf import settings
 import google.generativeai as genai
-from tourism.models import TourismSpot
-from tourism.services import TourismDataService
+# Django 모델 제거 - Firestore 기반으로 전환
+# from tourism.models import TourismSpot
+# from tourism.services import TourismDataService
 
 logger = logging.getLogger(__name__)
 
@@ -28,7 +29,8 @@ class GeminiAIService:
             logger.error(f"Failed to initialize Gemini AI: {e}")
             self.model = None
         
-        self.tourism_service = TourismDataService()
+        # Django 모델 제거 - Firestore 직접 사용
+        # self.tourism_service = TourismDataService()
     
     def analyze_user_query(self, user_query: str) -> Dict:
         """사용자 쿼리를 분석하여 관광지 검색 조건 추출"""
@@ -252,7 +254,7 @@ class GeminiAIService:
                 'confidence': 0.3
             }
     
-    def _rank_spots_with_ai(self, user_query: str, spots: List[TourismSpot], max_results: int) -> List[TourismSpot]:
+    def _rank_spots_with_ai(self, user_query: str, spots: List[Dict], max_results: int) -> List[Dict]:
         """AI를 이용하여 관광지 순위 매기기"""
         try:
             if not self.model:
@@ -261,7 +263,7 @@ class GeminiAIService:
             # 관광지 정보를 텍스트로 변환
             spots_info = []
             for i, spot in enumerate(spots):
-                spots_info.append(f"{i}: {spot.name} - {spot.description} ({spot.category})")
+                spots_info.append(f"{i}: {spot.get('name', '')} - {spot.get('description', '')} ({spot.get('category', '')})")
             
             prompt = f"""
             사용자 쿼리: "{user_query}"
@@ -289,7 +291,7 @@ class GeminiAIService:
             logger.error(f"Error ranking spots with AI: {e}")
             return spots[:max_results]
     
-    def generate_tourism_description(self, spots: List[TourismSpot]) -> str:
+    def generate_tourism_description(self, spots: List[Dict]) -> str:
         """선택된 관광지들에 대한 종합 설명 생성"""
         try:
             if not self.model or not spots:
@@ -297,7 +299,7 @@ class GeminiAIService:
             
             spots_info = []
             for spot in spots:
-                spots_info.append(f"- {spot.name}: {spot.description}")
+                spots_info.append(f"- {spot.get('name', '')}: {spot.get('description', '')}")
             
             prompt = f"""
             다음 의성군 관광지들에 대한 매력적인 여행 설명을 작성해주세요:
@@ -317,3 +319,38 @@ class GeminiAIService:
         except Exception as e:
             logger.error(f"Error generating tourism description: {e}")
             return ""
+    
+    def recommend_tourism_spots(self, user_query: str, all_spots: List[Dict]) -> Dict:
+        """사용자 쿼리를 기반으로 관광지 추천"""
+        try:
+            # 1. 사용자 쿼리 분석
+            analysis_result = self.analyze_user_query(user_query)
+            
+            if not analysis_result.get('success'):
+                return {
+                    'success': False,
+                    'message': '쿼리 분석 실패',
+                    'analysis': {},
+                    'recommended_spots': []
+                }
+            
+            analysis = analysis_result.get('analysis', {})
+            
+            # 2. 관광지 필터링 및 순위 매기기
+            recommended_spots = self._rank_spots_with_ai(user_query, all_spots, 20)
+            
+            return {
+                'success': True,
+                'analysis': analysis,
+                'recommended_spots': recommended_spots[:15],  # 상위 15개만 반환
+                'total_analyzed': len(all_spots)
+            }
+            
+        except Exception as e:
+            logger.error(f"Error in recommend_tourism_spots: {e}")
+            return {
+                'success': False,
+                'message': str(e),
+                'analysis': {},
+                'recommended_spots': []
+            }

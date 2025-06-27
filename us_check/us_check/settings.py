@@ -32,6 +32,7 @@ CSRF_TRUSTED_ORIGINS = [CLIENT_ADDRESS]
 # Application definition
 
 INSTALLED_APPS = [
+    # Django 기본 앱들 (필수)
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -39,23 +40,24 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
+    # Third party apps
     'rest_framework',
     'corsheaders',
-    'tourism',
+    
+    # Custom apps - 모두 Firestore 기반으로 변경
     'gemini_ai',
-    'qr_service',
+    'qr_service', 
     'api',
 ]
 
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
-    
     'django.middleware.security.SecurityMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',  # 세션 미들웨어 추가
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',  # 인증 미들웨어 추가
+    'django.contrib.messages.middleware.MessageMiddleware',  # 메시지 미들웨어 추가
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
@@ -91,13 +93,11 @@ TEMPLATES = [
 WSGI_APPLICATION = 'us_check.wsgi.application'
 
 
-# Database
-# https://docs.djangoproject.com/en/5.2/ref/settings/#databases
-
+# Database - Completely removed, using only Firestore
+# No Django ORM database configuration
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.dummy',
     }
 }
 

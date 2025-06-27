@@ -10,7 +10,8 @@ from django.conf import settings
 from django.core.files.storage import default_storage
 from django.urls import reverse
 from google.cloud import storage
-from .models import QRCode
+# Django 모델 제거 - Firestore 기반으로 전환
+# from .models import QRCode
 
 logger = logging.getLogger(__name__)
 
@@ -45,15 +46,8 @@ class QRCodeService:
             )
             
             if qr_result['success']:
-                # 데이터베이스에 QR 코드 정보 저장
-                qr_code = QRCode.objects.create(
-                    qr_type='tourism_selection',
-                    data=qr_data,
-                    file_path=qr_result['file_path'],
-                    url=qr_result['url'],
-                    gcp_url=qr_result.get('gcp_url', ''),
-                    related_id=selection_data.get('selection_id')
-                )
+                # Firestore에 QR 코드 정보 저장 (추후 구현)
+                # TODO: Firestore에 QR 코드 정보 저장
                 
                 return {
                     'success': True,

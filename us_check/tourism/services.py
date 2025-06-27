@@ -1,76 +1,295 @@
 """
-Tourism 서비스 - Firestore와 관광지 데이터 관리
+Tourism 서비스 - 완전히 Firestore 기반으로 리팩토링
+Django 모델 제거, 순수 Firestore 서비스
 """
 import logging
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Any
 from django.conf import settings
-from django.db import models
 from google.cloud import firestore
-from .models import TourismSpot
+from google.cloud.firestore_v1.base_query import FieldFilter
+import json
 
 logger = logging.getLogger(__name__)
 
-class FirestoreService:
-    """Firestore 데이터베이스 서비스"""
+class FirestoreTourismService:
+    """완전히 Firestore 기반의 관광지 데이터 서비스"""
     
     def __init__(self):
         self.db = getattr(settings, 'FIRESTORE_CLIENT', None)
-        self.collection_name = 'uiseong_tourism_spots'
+        if not self.db:
+            logger.error('Firestore client not initialized')
+        
+        # 컬렉션 이름들 - 실제 Firestore DB 컬렉션명과 일치
+        self.tourism_collection = 'tourism_spots'  # 실제 컬렉션명으로 변경
+        self.user_selections_collection = 'user_tourism_selections'
+        self.qr_codes_collection = 'qr_codes'
     
-    def sync_tourism_data(self) -> Dict:
-        """Firestore에서 관광지 데이터를 가져와서 Django 모델과 동기화"""
+    # =============================================================================
+    # 관광지 데이터 관리
+    # =============================================================================
+    
+    def get_all_tourism_spots(self) -> List[Dict]:
+        """모든 관광지 데이터 조회"""
+        try:
+            if not self.db:
+                return []
+            
+            docs = self.db.collection(self.tourism_collection).stream()
+            
+            spots = []
+            for doc in docs:
+                spot_data = doc.to_dict()
+                spot_data['id'] = doc.id
+                spots.append(spot_data)
+            
+            logger.info(f'총 {len(spots)}개의 관광지 데이터 조회')
+            return spots
+            
+        except Exception as e:
+            logger.error(f'관광지 데이터 조회 오류: {e}')
+            return []
+    
+    def get_tourism_spot_by_id(self, spot_id: str) -> Optional[Dict]:
+        """ID로 특정 관광지 조회"""
+        try:
+            if not self.db:
+                return None
+            
+            doc = self.db.collection(self.tourism_collection).document(spot_id).get()
+            
+            if doc.exists:
+                spot_data = doc.to_dict()
+                spot_data['id'] = doc.id
+                return spot_data
+            else:
+                return None
+                
+        except Exception as e:
+            logger.error(f'관광지 조회 오류 (ID: {spot_id}): {e}')
+            return None
+    
+    def search_tourism_spots_by_keyword(self, keyword: str) -> List[Dict]:
+        """키워드로 관광지 검색 (클라이언트 사이드 필터링)"""
+        try:
+            all_spots = self.get_all_tourism_spots()
+            
+            if not keyword:
+                return all_spots
+            
+            keyword_lower = keyword.lower()
+            filtered_spots = []
+            
+            for spot in all_spots:
+                # 여러 필드에서 키워드 검색
+                searchable_fields = [
+                    spot.get('name', ''),
+                    spot.get('title', ''),
+                    spot.get('description', ''),
+                    spot.get('overview', ''),
+                    spot.get('addr1', ''),
+                    spot.get('category', ''),
+                    ' '.join(spot.get('tags', []))
+                ]
+                
+                # 모든 검색 가능한 필드를 하나의 문자열로 합치기
+                search_text = ' '.join(searchable_fields).lower()
+                
+                if keyword_lower in search_text:
+                    filtered_spots.append(spot)
+            
+            logger.info(f'키워드 "{keyword}"로 {len(filtered_spots)}개 관광지 검색')
+            return filtered_spots
+            
+        except Exception as e:
+            logger.error(f'키워드 검색 오류: {e}')
+            return []
+    
+    def get_spots_by_category(self, category: str) -> List[Dict]:
+        """카테고리별 관광지 조회"""
+        try:
+            if not self.db:
+                return []
+            
+            # Firestore 쿼리로 카테고리 필터링
+            docs = self.db.collection(self.tourism_collection).where(
+                filter=FieldFilter('category', '==', category)
+            ).stream()
+            
+            spots = []
+            for doc in docs:
+                spot_data = doc.to_dict()
+                spot_data['id'] = doc.id
+                spots.append(spot_data)
+            
+            logger.info(f'카테고리 "{category}"로 {len(spots)}개 관광지 조회')
+            return spots
+            
+        except Exception as e:
+            logger.error(f'카테고리 검색 오류: {e}')
+            # 쿼리 실패 시 클라이언트 사이드 필터링으로 대체
+            all_spots = self.get_all_tourism_spots()
+            return [spot for spot in all_spots if spot.get('category') == category]
+    
+    def add_tourism_spot(self, spot_data: Dict) -> Dict:
+        """새 관광지 추가"""
         try:
             if not self.db:
                 return {'success': False, 'message': 'Firestore client not initialized'}
             
-            # Firestore에서 모든 관광지 데이터 가져오기
-            docs = self.db.collection(self.collection_name).stream()
+            # 문서 ID 생성 (이름 기반 또는 자동 생성)
+            doc_id = spot_data.get('id') or spot_data.get('name', '').replace(' ', '_').lower()
             
-            synced_count = 0
-            updated_count = 0
+            # 타임스탬프 추가
+            spot_data['created_at'] = firestore.SERVER_TIMESTAMP
+            spot_data['updated_at'] = firestore.SERVER_TIMESTAMP
+            spot_data['is_active'] = True
             
-            for doc in docs:
-                data = doc.to_dict()
-                firestore_id = doc.id
-                
-                # Django 모델에 저장 또는 업데이트
-                tourism_spot, created = TourismSpot.objects.update_or_create(
-                    firestore_id=firestore_id,
-                    defaults={
-                        'name': data.get('name', ''),
-                        'description': data.get('description', ''),
-                        'address': data.get('address', ''),
-                        'latitude': data.get('latitude'),
-                        'longitude': data.get('longitude'),
-                        'category': data.get('category', ''),
-                        'tags': data.get('tags', []),
-                        'contact_info': data.get('contact_info', ''),
-                        'website': data.get('website', ''),
-                        'opening_hours': data.get('opening_hours', ''),
-                        'raw_data': data,
-                    }
-                )
-                
-                if created:
-                    synced_count += 1
-                else:
-                    updated_count += 1
+            doc_ref = self.db.collection(self.tourism_collection).document(doc_id)
+            doc_ref.set(spot_data)
             
-            logger.info(f"Firestore sync completed: {synced_count} new, {updated_count} updated")
-            
-            return {
-                'success': True,
-                'synced_count': synced_count,
-                'updated_count': updated_count,
-                'total_count': synced_count + updated_count
-            }
+            logger.info(f'관광지 추가: {spot_data.get("name", doc_id)}')
+            return {'success': True, 'id': doc_id}
             
         except Exception as e:
-            logger.error(f"Error syncing Firestore data: {e}")
+            logger.error(f'관광지 추가 오류: {e}')
             return {'success': False, 'message': str(e)}
     
-    def upload_tourism_data(self, tourism_data: List[Dict]) -> Dict:
-        """관광지 데이터를 Firestore에 업로드"""
+    def update_tourism_spot(self, spot_id: str, spot_data: Dict) -> Dict:
+        """관광지 정보 업데이트"""
+        try:
+            if not self.db:
+                return {'success': False, 'message': 'Firestore client not initialized'}
+            
+            # 업데이트 타임스탬프 추가
+            spot_data['updated_at'] = firestore.SERVER_TIMESTAMP
+            
+            doc_ref = self.db.collection(self.tourism_collection).document(spot_id)
+            doc_ref.update(spot_data)
+            
+            logger.info(f'관광지 업데이트: {spot_id}')
+            return {'success': True, 'id': spot_id}
+            
+        except Exception as e:
+            logger.error(f'관광지 업데이트 오류: {e}')
+            return {'success': False, 'message': str(e)}
+    
+    def delete_tourism_spot(self, spot_id: str) -> Dict:
+        """관광지 삭제 (소프트 삭제)"""
+        try:
+            if not self.db:
+                return {'success': False, 'message': 'Firestore client not initialized'}
+            
+            doc_ref = self.db.collection(self.tourism_collection).document(spot_id)
+            doc_ref.update({
+                'is_active': False,
+                'deleted_at': firestore.SERVER_TIMESTAMP
+            })
+            
+            logger.info(f'관광지 삭제: {spot_id}')
+            return {'success': True, 'id': spot_id}
+            
+        except Exception as e:
+            logger.error(f'관광지 삭제 오류: {e}')
+            return {'success': False, 'message': str(e)}
+    
+    # =============================================================================
+    # 사용자 선택 관리
+    # =============================================================================
+    
+    def save_user_selection(self, selection_data: Dict) -> Dict:
+        """사용자 관광지 선택 저장"""
+        try:
+            if not self.db:
+                return {'success': False, 'message': 'Firestore client not initialized'}
+            
+            # 타임스탬프 추가
+            selection_data['created_at'] = firestore.SERVER_TIMESTAMP
+            selection_data['updated_at'] = firestore.SERVER_TIMESTAMP
+            
+            doc_ref = self.db.collection(self.user_selections_collection).document()
+            doc_ref.set(selection_data)
+            
+            logger.info(f'사용자 선택 저장: {doc_ref.id}')
+            return {'success': True, 'id': doc_ref.id}
+            
+        except Exception as e:
+            logger.error(f'사용자 선택 저장 오류: {e}')
+            return {'success': False, 'message': str(e)}
+    
+    def get_user_selections(self, user_id: str = None, session_id: str = None) -> List[Dict]:
+        """사용자 선택 기록 조회"""
+        try:
+            if not self.db:
+                return []
+            
+            query = self.db.collection(self.user_selections_collection)
+            
+            if user_id:
+                query = query.where(filter=FieldFilter('user_id', '==', user_id))
+            elif session_id:
+                query = query.where(filter=FieldFilter('session_id', '==', session_id))
+            
+            docs = query.order_by('created_at', direction=firestore.Query.DESCENDING).stream()
+            
+            selections = []
+            for doc in docs:
+                selection_data = doc.to_dict()
+                selection_data['id'] = doc.id
+                selections.append(selection_data)
+            
+            return selections
+            
+        except Exception as e:
+            logger.error(f'사용자 선택 조회 오류: {e}')
+            return []
+    
+    # =============================================================================
+    # QR 코드 관리
+    # =============================================================================
+    
+    def save_qr_code_info(self, qr_data: Dict) -> Dict:
+        """QR 코드 정보 저장"""
+        try:
+            if not self.db:
+                return {'success': False, 'message': 'Firestore client not initialized'}
+            
+            qr_data['created_at'] = firestore.SERVER_TIMESTAMP
+            
+            doc_ref = self.db.collection(self.qr_codes_collection).document()
+            doc_ref.set(qr_data)
+            
+            logger.info(f'QR 코드 정보 저장: {doc_ref.id}')
+            return {'success': True, 'id': doc_ref.id}
+            
+        except Exception as e:
+            logger.error(f'QR 코드 정보 저장 오류: {e}')
+            return {'success': False, 'message': str(e)}
+    
+    def get_qr_code_info(self, qr_id: str) -> Optional[Dict]:
+        """QR 코드 정보 조회"""
+        try:
+            if not self.db:
+                return None
+            
+            doc = self.db.collection(self.qr_codes_collection).document(qr_id).get()
+            
+            if doc.exists:
+                qr_data = doc.to_dict()
+                qr_data['id'] = doc.id
+                return qr_data
+            else:
+                return None
+                
+        except Exception as e:
+            logger.error(f'QR 코드 정보 조회 오류: {e}')
+            return None
+    
+    # =============================================================================
+    # 데이터 마이그레이션 및 초기화
+    # =============================================================================
+    
+    def bulk_upload_tourism_data(self, tourism_data: List[Dict]) -> Dict:
+        """관광지 데이터 대량 업로드"""
         try:
             if not self.db:
                 return {'success': False, 'message': 'Firestore client not initialized'}
@@ -79,211 +298,276 @@ class FirestoreService:
             uploaded_count = 0
             
             for data in tourism_data:
-                # 문서 ID 생성 (name을 기반으로 하거나 자동 생성)
+                # 문서 ID 생성
                 doc_id = data.get('id') or data.get('name', '').replace(' ', '_').lower()
                 if not doc_id:
                     continue
                 
-                doc_ref = self.db.collection(self.collection_name).document(doc_id)
+                # 타임스탬프 추가
+                data['created_at'] = firestore.SERVER_TIMESTAMP
+                data['updated_at'] = firestore.SERVER_TIMESTAMP
+                data['is_active'] = True
+                
+                doc_ref = self.db.collection(self.tourism_collection).document(doc_id)
                 batch.set(doc_ref, data)
                 uploaded_count += 1
+                
+                # 배치 크기 제한 (Firestore는 배치당 500개 제한)
+                if uploaded_count % 500 == 0:
+                    batch.commit()
+                    batch = self.db.batch()
             
-            # 배치 커밋
-            batch.commit()
+            # 남은 배치 커밋
+            if uploaded_count % 500 != 0:
+                batch.commit()
             
-            logger.info(f"Uploaded {uploaded_count} tourism spots to Firestore")
+            logger.info(f'총 {uploaded_count}개 관광지 데이터 업로드 완료')
+            return {'success': True, 'uploaded_count': uploaded_count}
+            
+        except Exception as e:
+            logger.error(f'대량 업로드 오류: {e}')
+            return {'success': False, 'message': str(e)}
+    
+    def get_database_stats(self) -> Dict:
+        """데이터베이스 통계 정보"""
+        try:
+            stats = {
+                'tourism_spots': 0,
+                'user_selections': 0,
+                'qr_codes': 0
+            }
+            
+            if not self.db:
+                return stats
+            
+            # 각 컬렉션의 문서 수 조회
+            collections = [
+                (self.tourism_collection, 'tourism_spots'),
+                (self.user_selections_collection, 'user_selections'),
+                (self.qr_codes_collection, 'qr_codes')
+            ]
+            
+            for collection_name, stat_key in collections:
+                docs = self.db.collection(collection_name).stream()
+                count = sum(1 for _ in docs)
+                stats[stat_key] = count
+            
+            return stats
+            
+        except Exception as e:
+            logger.error(f'통계 조회 오류: {e}')
+            return {'error': str(e)}
+
+    # =============================================================================
+    # API 호환성을 위한 메서드들
+    # =============================================================================
+    
+    def get_all_spots(self) -> List[Dict]:
+        """API 호환성을 위한 메서드 - get_all_tourism_spots와 동일"""
+        return self.get_all_tourism_spots()
+    
+    def get_spot_by_id(self, spot_id: str) -> Optional[Dict]:
+        """API 호환성을 위한 메서드 - get_tourism_spot_by_id와 동일"""
+        return self.get_tourism_spot_by_id(spot_id)
+    
+    def search_spots_by_keywords(self, keywords: List[str]) -> List[Dict]:
+        """키워드 리스트로 관광지 검색"""
+        try:
+            all_spots = self.get_all_tourism_spots()
+            
+            if not keywords:
+                return all_spots
+            
+            filtered_spots = []
+            
+            for spot in all_spots:
+                # 여러 필드에서 키워드 검색
+                searchable_fields = [
+                    spot.get('name', ''),
+                    spot.get('title', ''),
+                    spot.get('description', ''),
+                    spot.get('overview', ''),
+                    spot.get('addr1', ''),
+                    spot.get('category', ''),
+                    ' '.join(spot.get('tags', []))
+                ]
+                
+                # 모든 검색 가능한 필드를 하나의 문자열로 합치기
+                search_text = ' '.join(searchable_fields).lower()
+                
+                # 키워드 중 하나라도 매치되면 포함
+                match_found = False
+                for keyword in keywords:
+                    if keyword.lower() in search_text:
+                        match_found = True
+                        break
+                
+                if match_found:
+                    filtered_spots.append(spot)
+            
+            logger.info(f'키워드 {keywords}로 {len(filtered_spots)}개 관광지 검색')
+            return filtered_spots
+            
+        except Exception as e:
+            logger.error(f'키워드 검색 오류: {e}')
+            return []
+    
+    # =============================================================================
+    # 사용자 선택 기록 관리
+    # =============================================================================
+    
+    def create_user_selection(self, selection_data: Dict) -> str:
+        """사용자 선택 기록 생성"""
+        try:
+            if not self.db:
+                raise Exception('Firestore client not initialized')
+            
+            # 새 문서 생성
+            doc_ref = self.db.collection(self.user_selections_collection).document()
+            
+            # 데이터에 ID 추가
+            selection_data['id'] = doc_ref.id
+            
+            # Firestore에 저장
+            doc_ref.set(selection_data)
+            
+            logger.info(f'사용자 선택 기록 생성: {doc_ref.id}')
+            return doc_ref.id
+            
+        except Exception as e:
+            logger.error(f'사용자 선택 기록 생성 오류: {e}')
+            raise
+    
+    def get_user_selection(self, selection_id: str) -> Optional[Dict]:
+        """특정 사용자 선택 기록 조회"""
+        try:
+            if not self.db:
+                return None
+            
+            doc = self.db.collection(self.user_selections_collection).document(selection_id).get()
+            
+            if doc.exists:
+                data = doc.to_dict()
+                data['id'] = doc.id
+                return data
+            else:
+                return None
+                
+        except Exception as e:
+            logger.error(f'사용자 선택 기록 조회 오류 (ID: {selection_id}): {e}')
+            return None
+    
+    def update_user_selection(self, selection_id: str, update_data: Dict) -> bool:
+        """사용자 선택 기록 업데이트"""
+        try:
+            if not self.db:
+                return False
+            
+            doc_ref = self.db.collection(self.user_selections_collection).document(selection_id)
+            doc_ref.update(update_data)
+            
+            logger.info(f'사용자 선택 기록 업데이트: {selection_id}')
+            return True
+            
+        except Exception as e:
+            logger.error(f'사용자 선택 기록 업데이트 오류: {e}')
+            return False
+    
+    def get_user_selections(self, user_id: str = None, session_id: str = None, limit: int = 10) -> List[Dict]:
+        """사용자 선택 기록 목록 조회"""
+        try:
+            if not self.db:
+                return []
+            
+            query = self.db.collection(self.user_selections_collection)
+            
+            # 필터 조건 추가
+            if user_id:
+                query = query.where('user_id', '==', user_id)
+            elif session_id:
+                query = query.where('session_id', '==', session_id)
+            
+            # 정렬 및 제한
+            query = query.order_by('created_at', direction=firestore.Query.DESCENDING).limit(limit)
+            
+            docs = query.stream()
+            
+            selections = []
+            for doc in docs:
+                selection_data = doc.to_dict()
+                selection_data['id'] = doc.id
+                selections.append(selection_data)
+            
+            logger.info(f'사용자 선택 기록 조회: {len(selections)}개')
+            return selections
+            
+        except Exception as e:
+            logger.error(f'사용자 선택 기록 목록 조회 오류: {e}')
+            return []
+    
+    def sync_all_data(self) -> Dict:
+        """모든 데이터 동기화"""
+        try:
+            spots = self.get_all_tourism_spots()
             
             return {
                 'success': True,
-                'uploaded_count': uploaded_count
+                'message': f'데이터 동기화 완료: {len(spots)}개 관광지',
+                'total_spots': len(spots)
             }
             
         except Exception as e:
-            logger.error(f"Error uploading to Firestore: {e}")
-            return {'success': False, 'message': str(e)}
-    
-    def search_tourism_spots(self, query_params: Dict) -> List[Dict]:
-        """Firestore에서 관광지 검색"""
-        try:
-            if not self.db:
-                return []
-            
-            query = self.db.collection(self.collection_name)
-            
-            # 카테고리 필터링
-            if 'category' in query_params:
-                query = query.where('category', '==', query_params['category'])
-            
-            # 추가 필터링 로직...
-            
-            results = []
-            for doc in query.stream():
-                data = doc.to_dict()
-                data['firestore_id'] = doc.id
-                results.append(data)
-            
-            return results
-            
-        except Exception as e:
-            logger.error(f"Error searching Firestore: {e}")
-            return []
-
-    def clear_collection(self, collection_name: str = None) -> Dict:
-        """Firestore 컬렉션의 모든 문서 삭제"""
-        try:
-            if not self.db:
-                return {'success': False, 'message': 'Firestore client not initialized'}
-            
-            collection_name = collection_name or self.collection_name
-            collection_ref = self.db.collection(collection_name)
-            
-            # 배치 삭제
-            docs = collection_ref.limit(500).stream()
-            deleted_count = 0
-            
-            batch = self.db.batch()
-            batch_count = 0
-            
-            for doc in docs:
-                batch.delete(doc.reference)
-                batch_count += 1
-                deleted_count += 1
-                
-                # 배치가 500개에 도달하면 커밋
-                if batch_count >= 500:
-                    batch.commit()
-                    batch = self.db.batch()
-                    batch_count = 0
-            
-            # 마지막 배치 커밋
-            if batch_count > 0:
-                batch.commit()
-            
-            logger.info(f'Firestore 컬렉션 "{collection_name}" 에서 {deleted_count}개 문서 삭제')
+            logger.error(f'데이터 동기화 오류: {e}')
             return {
-                'success': True, 
-                'message': f'{deleted_count}개 문서 삭제 완료',
-                'deleted_count': deleted_count
+                'success': False,
+                'message': str(e)
             }
-            
-        except Exception as e:
-            logger.error(f'Firestore 컬렉션 삭제 오류: {e}')
-            return {'success': False, 'message': str(e)}
+
+
+# 전역 서비스 인스턴스
+tourism_service = FirestoreTourismService()
+
+
+# =============================================================================
+# 기존 코드와의 호환성을 위한 래퍼 클래스들
+# =============================================================================
+
+class FirestoreService:
+    """기존 코드 호환성을 위한 래퍼 클래스"""
     
-    def add_document(self, collection_name: str, document_data: Dict, doc_id: str = None) -> Dict:
-        """Firestore 컬렉션에 문서 추가"""
-        try:
-            if not self.db:
-                return {'success': False, 'message': 'Firestore client not initialized'}
-            
-            collection_ref = self.db.collection(collection_name)
-            
-            if doc_id:
-                # 지정된 ID로 문서 생성/업데이트
-                doc_ref = collection_ref.document(doc_id)
-                doc_ref.set(document_data)
-                return {'success': True, 'doc_id': doc_id, 'message': 'Document added with custom ID'}
-            else:
-                # 자동 ID로 문서 생성
-                doc_ref = collection_ref.add(document_data)
-                return {'success': True, 'doc_id': doc_ref[1].id, 'message': 'Document added with auto ID'}
-                
-        except Exception as e:
-            logger.error(f'Firestore 문서 추가 오류: {e}')
-            return {'success': False, 'message': str(e)}
+    def __init__(self):
+        self.service = tourism_service
     
     def get_all_documents(self, collection_name: str = None) -> List[Dict]:
-        """Firestore 컬렉션의 모든 문서 조회"""
-        try:
-            if not self.db:
-                logger.error('Firestore client not initialized')
-                return []
-            
-            collection_name = collection_name or self.collection_name
-            docs = self.db.collection(collection_name).stream()
-            
-            documents = []
-            for doc in docs:
-                doc_data = doc.to_dict()
-                doc_data['id'] = doc.id
-                documents.append(doc_data)
-            
-            return documents
-            
-        except Exception as e:
-            logger.error(f'Firestore 문서 조회 오류: {e}')
-            return []
+        if collection_name == 'tourism_spots' or not collection_name:
+            return self.service.get_all_tourism_spots()
+        return []
     
     def query_documents(self, collection_name: str, field: str, operator: str, value) -> List[Dict]:
-        """Firestore 컬렉션에서 조건부 쿼리"""
-        try:
-            if not self.db:
-                logger.error('Firestore client not initialized')
-                return []
-            
-            collection_name = collection_name or self.collection_name
-            docs = self.db.collection(collection_name).where(field, operator, value).stream()
-            
-            documents = []
-            for doc in docs:
-                doc_data = doc.to_dict()
-                doc_data['id'] = doc.id
-                documents.append(doc_data)
-            
-            return documents
-            
-        except Exception as e:
-            logger.error(f'Firestore 쿼리 오류: {e}')
-            return []
+        if collection_name == 'tourism_spots' and field == 'category' and operator == '==':
+            return self.service.get_spots_by_category(value)
+        return []
 
 
 class TourismDataService:
-    """관광지 데이터 관리 서비스"""
+    """기존 코드 호환성을 위한 래퍼 클래스"""
     
     def __init__(self):
-        self.firestore_service = FirestoreService()
+        self.service = tourism_service
     
-    def get_all_tourism_spots(self) -> List[TourismSpot]:
-        """모든 관광지 데이터 반환"""
-        return TourismSpot.objects.filter(is_active=True)
+    def get_all_tourism_spots(self) -> List[Dict]:
+        return self.service.get_all_tourism_spots()
     
-    def search_spots_by_keywords(self, keywords: List[str]) -> List[TourismSpot]:
-        """키워드로 관광지 검색 (SQLite 호환)"""
+    def search_spots_by_keywords(self, keywords: List[str]) -> List[Dict]:
         if not keywords:
-            return TourismSpot.objects.filter(is_active=True)
+            return self.service.get_all_tourism_spots()
         
-        # 각 키워드에 대해 OR 조건으로 검색
-        query = models.Q()
-        
-        for keyword in keywords:
-            keyword_query = (
-                models.Q(name__icontains=keyword) |
-                models.Q(description__icontains=keyword) |
-                models.Q(category__icontains=keyword) |
-                models.Q(address__icontains=keyword)
-            )
-            query |= keyword_query
-        
-        # 기본 쿼리 실행
-        queryset = TourismSpot.objects.filter(query, is_active=True)
-        
-        return queryset
+        # 첫 번째 키워드로 검색 (간단한 구현)
+        return self.service.search_tourism_spots_by_keyword(keywords[0])
     
-    def get_spots_by_category(self, category: str) -> List[TourismSpot]:
-        """카테고리별 관광지 검색"""
-        return TourismSpot.objects.filter(
-            category__icontains=category,
-            is_active=True
-        )
+    def get_spots_by_category(self, category: str) -> List[Dict]:
+        return self.service.get_spots_by_category(category)
     
-    def get_nearby_spots(self, latitude: float, longitude: float, radius_km: float = 10) -> List[TourismSpot]:
-        """근처 관광지 검색 (간단한 구현)"""
-        # 실제로는 더 정교한 지리적 검색이 필요
-        spots = TourismSpot.objects.filter(
-            is_active=True,
-            latitude__isnull=False,
-            longitude__isnull=False
-        )
-        
-        # 거리 계산 로직 추가 필요
-        return spots[:10]  # 임시로 10개만 반환
+    def get_nearby_spots(self, latitude: float, longitude: float, radius_km: float = 10) -> List[Dict]:
+        # 지리적 검색은 별도 구현 필요
+        return self.service.get_all_tourism_spots()[:10]

@@ -9,12 +9,12 @@ from django.utils import timezone
 from django.conf import settings
 import logging
 
-from .firestore_services import FirestoreTourismService
+from .services import TourismRecommendationService
 
 logger = logging.getLogger(__name__)
 
-# Firestore 기반 서비스 인스턴스
-recommendation_service = FirestoreTourismService()
+# 통합 서비스 인스턴스
+recommendation_service = TourismRecommendationService()
 
 @api_view(['POST', 'GET'])
 @permission_classes([AllowAny])
@@ -68,10 +68,19 @@ def process_query(request):
         
         # 단계별로 서비스 호출 테스트
         try:
-            # Firestore 기반 추천 서비스 호출
-            logger.info("Firestore 기반 추천 서비스 호출 중...")
-            result = recommendation_service.get_recommendations_by_query(user_query)
-            logger.info(f"추천 결과: {len(result.get('recommendations', []))}개")
+            # 1단계: 서비스 인스턴스 확인
+            logger.info("recommendation_service 확인 중...")
+            service = recommendation_service
+            logger.info(f"서비스 타입: {type(service)}")
+            
+            # 2단계: 실제 호출
+            logger.info("process_user_query 호출 중...")
+            result = service.process_user_query(
+                user_query=user_query,
+                user=user,
+                session_id=session_id
+            )
+            logger.info(f"서비스 호출 완료: {result.get('success', 'unknown')}")
             
             if result['success']:
                 return Response(result, status=status.HTTP_200_OK)
@@ -146,11 +155,11 @@ def finalize_selection(request):
             except User.DoesNotExist:
                 logger.warning(f"User not found: {user_id}")
         
-        # Firestore 기반 선택 완료 처리
-        result = recommendation_service.save_user_selection(
-            user_query="",  # 기존 쿼리 정보가 필요할 경우 별도 처리
-            selected_spots=selected_spot_ids,
-            session_id=data.get('session_id')
+        # 선택 완료 처리
+        result = recommendation_service.finalize_user_selection(
+            selection_id=selection_id,
+            selected_spot_ids=selected_spot_ids,
+            user=user
         )
         
         if result['success']:
@@ -189,17 +198,16 @@ def get_user_history(request):
             except User.DoesNotExist:
                 logger.warning(f"User not found: {user_id}")
         
-        # Firestore 기반 사용자 히스토리 조회
-        history = recommendation_service.get_user_history(
+        result = recommendation_service.get_user_selections(
+            user=user,
             session_id=session_id,
             limit=limit
         )
         
-        return Response({
-            'success': True,
-            'history': history,
-            'count': len(history)
-        }, status=status.HTTP_200_OK)
+        if result['success']:
+            return Response(result, status=status.HTTP_200_OK)
+        else:
+            return Response(result, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
     except Exception as e:
         logger.error(f"Error in get_user_history: {e}")
@@ -216,14 +224,12 @@ def get_all_spots(request):
     모든 관광지 데이터 조회 엔드포인트 (관리/개발용)
     """
     try:
-        # Firestore에서 모든 관광지 데이터 조회
-        spots = recommendation_service.get_all_spots()
+        result = recommendation_service.get_all_tourism_spots()
         
-        return Response({
-            'success': True,
-            'spots': spots,
-            'count': len(spots)
-        }, status=status.HTTP_200_OK)
+        if result['success']:
+            return Response(result, status=status.HTTP_200_OK)
+        else:
+            return Response(result, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
     except Exception as e:
         logger.error(f"Error in get_all_spots: {e}")
@@ -238,17 +244,15 @@ def get_all_spots(request):
 @csrf_exempt
 def sync_firestore(request):
     """
-    Firestore 통계 정보 조회 엔드포인트 (관리용)
+    Firestore 데이터 동기화 엔드포인트 (관리용)
     """
     try:
-        # Firestore 기반에서는 통계 정보 조회로 변경
-        stats = recommendation_service.get_statistics()
+        result = recommendation_service.sync_firestore_data()
         
-        return Response({
-            'success': True,
-            'message': 'Firestore 기반 서비스 통계',
-            'statistics': stats
-        }, status=status.HTTP_200_OK)
+        if result['success']:
+            return Response(result, status=status.HTTP_200_OK)
+        else:
+            return Response(result, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
             
     except Exception as e:
         logger.error(f"Error in sync_firestore: {e}")
@@ -262,26 +266,13 @@ def sync_firestore(request):
 @permission_classes([AllowAny])
 def health_check(request):
     """
-    Firestore 기반 서버 상태 확인 엔드포인트
+    서버 상태 확인 엔드포인트
     """
-    try:
-        # Firestore 연결 테스트
-        total_spots = len(recommendation_service.get_all_spots())
-        
-        return Response({
-            'success': True,
-            'message': 'Firestore 기반 서비스가 정상적으로 작동 중입니다.',
-            'database': 'Firestore',
-            'total_spots': total_spots,
-            'timestamp': timezone.now().isoformat()
-        }, status=status.HTTP_200_OK)
-    except Exception as e:
-        return Response({
-            'success': False,
-            'message': f'Firestore 서비스 오류: {str(e)}',
-            'database': 'Firestore',
-            'timestamp': timezone.now().isoformat()
-        }, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return Response({
+        'success': True,
+        'message': 'Server is running',
+        'timestamp': timezone.now().isoformat()
+    }, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
