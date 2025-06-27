@@ -1,6 +1,8 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+import google.auth
+from google.cloud import firestore
 
 # Load environment variables from .env file
 load_dotenv()
@@ -37,7 +39,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
+    'rest_framework',
     'corsheaders',
+    'tourism',
+    'gemini_ai',
+    'qr_service',
+    'api',
 ]
 
 MIDDLEWARE = [
@@ -51,6 +58,16 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# REST Framework 설정
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'rest_framework.renderers.JSONRenderer',
+    ],
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser',
+    ],
+}
 
 
 
@@ -125,3 +142,64 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Google Cloud Settings
+GOOGLE_APPLICATION_CREDENTIALS = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
+GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
+
+# Firestore Settings
+FIRESTORE_PROJECT_ID = os.environ.get('FIRESTORE_PROJECT_ID', 'gen-lang-client-0000121060')
+FIRESTORE_DATABASE_ID = os.environ.get('FIRESTORE_DATABASE_ID', 'us-check2')
+
+# Initialize Firestore client
+try:
+    if GOOGLE_APPLICATION_CREDENTIALS:
+        os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = GOOGLE_APPLICATION_CREDENTIALS
+    
+    # Initialize Firestore client with specific database
+    FIRESTORE_CLIENT = firestore.Client(project=FIRESTORE_PROJECT_ID, database=FIRESTORE_DATABASE_ID)
+except Exception as e:
+    print(f"Warning: Could not initialize Firestore client: {e}")
+    FIRESTORE_CLIENT = None
+
+# QR Code Settings
+QR_CODE_STORAGE_PATH = os.path.join(BASE_DIR, 'qr_codes')
+QR_CODE_BASE_URL = f"{os.environ.get('SERVER_ADDRESS', 'http://localhost:8000')}/qr/"
+
+# Media files
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Logging
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(BASE_DIR, 'django.log'),
+        },
+        'console': {
+            'level': 'DEBUG',
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+        'gemini_ai': {
+            'handlers': ['file', 'console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'tourism': {
+            'handlers': ['file', 'console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+    },
+}
