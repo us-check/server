@@ -4,19 +4,28 @@ Firestore 데이터 현황 확인 스크립트
 """
 import os
 import django
-from google.cloud import firestore
 
 # Django 설정
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'us_check.settings')
 django.setup()
 
+from django.conf import settings
+
 def check_firestore_data():
     try:
-        # Firestore 클라이언트 초기화
-        db = firestore.Client()
-        collection_name = 'uiseong_tourism_spots'
+        # Django settings에서 Firestore 클라이언트 가져오기
+        db = getattr(settings, 'FIRESTORE_CLIENT', None)
+        
+        if not db:
+            print("❌ Firestore 클라이언트가 초기화되지 않았습니다.")
+            print("💡 settings.py의 Firestore 설정을 확인하세요.")
+            return
+        
+        collection_name = 'tourism_spots'
         
         print(f"🔍 Firestore 컬렉션 '{collection_name}' 확인 중...")
+        print(f"📋 프로젝트: {settings.FIRESTORE_PROJECT_ID}")
+        print(f"📋 데이터베이스: {settings.FIRESTORE_DATABASE_ID}")
         
         # 문서 개수 확인
         docs = db.collection(collection_name).stream()

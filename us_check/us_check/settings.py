@@ -159,7 +159,9 @@ try:
     # Initialize Firestore client with specific database
     FIRESTORE_CLIENT = firestore.Client(project=FIRESTORE_PROJECT_ID, database=FIRESTORE_DATABASE_ID)
 except Exception as e:
-    print(f"Warning: Could not initialize Firestore client: {e}")
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.warning(f"Could not initialize Firestore client: {e}")
     FIRESTORE_CLIENT = None
 
 # QR Code Settings

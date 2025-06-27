@@ -32,8 +32,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "AC",
                         "lclsSystm2": "AC03",
-                        "lclsSystm3": "AC030200",
-                        "overview": "전통 한옥 숙박체험 고택"
+                        "lclsSystm3": "AC030200"
                     },
                     {
                         "addr1": "경상북도 의성군 금성면 초전1길 83",
@@ -60,8 +59,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "VE",
                         "lclsSystm2": "VE07",
-                        "lclsSystm3": "VE070100",
-                        "overview": "조문국 역사문화 전시관"
+                        "lclsSystm3": "VE070100"
                     },
                     {
                         "addr1": "경상북도 의성군 안평면 신안2길 223",
@@ -88,8 +86,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "HS",
                         "lclsSystm2": "HS03",
-                        "lclsSystm3": "HS030100",
-                        "overview": "고즈넉한 전통 사찰"
+                        "lclsSystm3": "HS030100"
                     },
                     {
                         "addr1": "경상북도 의성군 안평면 옥련사길 130",
@@ -116,8 +113,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "HS",
                         "lclsSystm2": "HS03",
-                        "lclsSystm3": "HS030100",
-                        "overview": "산속 깊은 고즈넉한 사찰"
+                        "lclsSystm3": "HS030100"
                     },
                     {
                         "addr1": "경상북도 의성군 단촌면 고운사길 415",
@@ -144,8 +140,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "HS",
                         "lclsSystm2": "HS03",
-                        "lclsSystm3": "HS030100",
-                        "overview": "신라시대 유서깊은 고찰"
+                        "lclsSystm3": "HS030100"
                     },
                     {
                         "addr1": "경상북도 의성군 사곡면 산수유2길 2",
@@ -172,8 +167,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "EV",
                         "lclsSystm2": "EV01",
-                        "lclsSystm3": "EV010200",
-                        "overview": "봄철 산수유꽃 축제 행사"
+                        "lclsSystm3": "EV010200"
                     },
                     {
                         "addr1": "경상북도 의성군 단북면 안계길 255-13",
@@ -200,8 +194,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "EX",
                         "lclsSystm2": "EX07",
-                        "lclsSystm3": "EX070200",
-                        "overview": "동물과 함께하는 체험공간"
+                        "lclsSystm3": "EX070200"
                     },
                     {
                         "addr1": "경상북도 의성군 봉양면 도리원2길 88-42",
@@ -228,8 +221,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "EX",
                         "lclsSystm2": "EX05",
-                        "lclsSystm3": "EX050100",
-                        "overview": "천연 약수 온천 휴양지"
+                        "lclsSystm3": "EX050100"
                     },
                     {
                         "addr1": "경상북도 의성군 의성읍 전통시장1길 8-1",
@@ -256,8 +248,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "FD",
                         "lclsSystm2": "FD01",
-                        "lclsSystm3": "FD010100",
-                        "overview": "전통 한정식 맛집"
+                        "lclsSystm3": "FD010100"
                     },
                     {
                         "addr1": "경상북도 의성군 의성읍 전통시장3길 12",
@@ -284,8 +275,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "SH",
                         "lclsSystm2": "SH06",
-                        "lclsSystm3": "SH060100",
-                        "overview": "2일과 7일 열리는 전통장터"
+                        "lclsSystm3": "SH060100"
                     },
                     {
                         "addr1": "경상북도 의성군 점곡면 점곡길 15-8",
@@ -312,8 +302,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "HS",
                         "lclsSystm2": "HS01",
-                        "lclsSystm3": "HS010900",
-                        "overview": "조선시대 선비문화 유적"
+                        "lclsSystm3": "HS010900"
                     },
                     {
                         "addr1": "경상북도 의성군 금성면 초전1길",
@@ -340,8 +329,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "HS",
                         "lclsSystm2": "HS01",
-                        "lclsSystm3": "HS010800",
-                        "overview": "신라시대 고분군 유적지"
+                        "lclsSystm3": "HS010800"
                     },
                     {
                         "addr1": "경상북도 의성군 금성면 산운마을길 55",
@@ -368,8 +356,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "AC",
                         "lclsSystm2": "AC03",
-                        "lclsSystm3": "AC030200",
-                        "overview": "전통 한옥 고택 숙박시설"
+                        "lclsSystm3": "AC030200"
                     },
                     {
                         "addr1": "경상북도 의성군 단촌면 고운사길 241",
@@ -396,8 +383,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "VE",
                         "lclsSystm2": "VE07",
-                        "lclsSystm3": "VE070200",
-                        "overview": "최치원 문학과 생애 전시관"
+                        "lclsSystm3": "VE070200"
                     },
                     {
                         "addr1": "경상북도 의성군 가음면 빙계계곡길 51",
@@ -424,8 +410,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "AC",
                         "lclsSystm2": "AC05",
-                        "lclsSystm3": "AC050100",
-                        "overview": "여름철 피서 캠핑장"
+                        "lclsSystm3": "AC050100"
                     },
                     {
                         "addr1": "경상북도 의성군 다인면 봉정리",
@@ -452,8 +437,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "NA",
                         "lclsSystm2": "NA01",
-                        "lclsSystm3": "NA010100",
-                        "overview": "등산과 자연경관 명소"
+                        "lclsSystm3": "NA010100"
                     },
                     {
                         "addr1": "경상북도 의성군 금성면 탑리리",
@@ -480,8 +464,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "NA",
                         "lclsSystm2": "NA01",
-                        "lclsSystm3": "NA010100",
-                        "overview": "의성군 대표 등산 명소"
+                        "lclsSystm3": "NA010100"
                     },
                     {
                         "addr1": "경상북도 의성군 점곡면 사촌리",
@@ -508,8 +491,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "NA",
                         "lclsSystm2": "NA01",
-                        "lclsSystm3": "NA010400",
-                        "overview": "맑은 계곡물과 시원한 계곡"
+                        "lclsSystm3": "NA010400"
                     },
                     {
                         "addr1": "경상북도 의성군 단밀면 구단길 182-10",
@@ -536,8 +518,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "EX",
                         "lclsSystm2": "EX03",
-                        "lclsSystm3": "EX030100",
-                        "overview": "전통문화 체험마을"
+                        "lclsSystm3": "EX030100"
                     },
                     {
                         "addr1": "경상북도 의성군 의성읍 향교길 57",
@@ -564,8 +545,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "HS",
                         "lclsSystm2": "HS01",
-                        "lclsSystm3": "HS010900",
-                        "overview": "조선시대 교육기관 유적"
+                        "lclsSystm3": "HS010900"
                     },
                     {
                         "addr1": "경상북도 의성군 휴양림길 114 금봉자연휴양림",
@@ -592,8 +572,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "NA",
                         "lclsSystm2": "NA04",
-                        "lclsSystm3": "NA040600",
-                        "overview": "숲속 휴양과 힐링 공간"
+                        "lclsSystm3": "NA040600"
                     },
                     {
                         "addr1": "경상북도 의성군 점곡면 점곡길 17-1",
@@ -620,8 +599,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "HS",
                         "lclsSystm2": "HS01",
-                        "lclsSystm3": "HS010600",
-                        "overview": "은행나무로 유명한 전통마을"
+                        "lclsSystm3": "HS010600"
                     },
                     {
                         "addr1": "경상북도 의성군 춘산면",
@@ -648,8 +626,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "NA",
                         "lclsSystm2": "NA01",
-                        "lclsSystm3": "NA010400",
-                        "overview": "여름 피서지로 인기 계곡"
+                        "lclsSystm3": "NA010400"
                     },
                     {
                         "addr1": "경상북도 의성군 금성면 대리리",
@@ -676,8 +653,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "HS",
                         "lclsSystm2": "HS01",
-                        "lclsSystm3": "HS010800",
-                        "overview": "고대 조문국 왕도 유적지"
+                        "lclsSystm3": "HS010800"
                     },
                     {
                         "addr1": "경상북도 의성군 금성면 공룡로 179-18",
@@ -704,8 +680,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "NA",
                         "lclsSystm2": "NA03",
-                        "lclsSystm3": "NA030300",
-                        "overview": "중생대 공룡화석 발견지"
+                        "lclsSystm3": "NA030300"
                     },
                     {
                         "addr1": "경상북도 의성군 단북면 중련길 22-8",
@@ -732,8 +707,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "VE",
                         "lclsSystm2": "VE07",
-                        "lclsSystm3": "VE070100",
-                        "overview": "전통문화와 창조예술 전시관"
+                        "lclsSystm3": "VE070100"
                     },
                     {
                         "addr1": "경상북도 의성군 신평면 덕봉리",
@@ -760,8 +734,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "NA",
                         "lclsSystm2": "NA02",
-                        "lclsSystm3": "NA020300",
-                        "overview": "자연 습지와 생태 관찰지"
+                        "lclsSystm3": "NA020300"
                     },
                     {
                         "addr1": "경상북도 의성군 금성면 대리리",
@@ -788,8 +761,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "HS",
                         "lclsSystm2": "HS01",
-                        "lclsSystm3": "HS011000",
-                        "overview": "신라 경덕왕의 능묘"
+                        "lclsSystm3": "HS011000"
                     },
                     {
                         "addr1": "경상북도 의성군 금성면 수정사길 420",
@@ -816,8 +788,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "HS",
                         "lclsSystm2": "HS03",
-                        "lclsSystm3": "HS030100",
-                        "overview": "고요한 산사 명상 공간"
+                        "lclsSystm3": "HS030100"
                     },
                     {
                         "addr1": "경상북도 의성군 춘산면 빙계계곡길 80",
@@ -844,8 +815,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "HS",
                         "lclsSystm2": "HS01",
-                        "lclsSystm3": "HS010900",
-                        "overview": "조선시대 교육기관 서원"
+                        "lclsSystm3": "HS010900"
                     },
                     {
                         "addr1": "경상북도 의성군 안계면",
@@ -872,8 +842,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "NA",
                         "lclsSystm2": "NA02",
-                        "lclsSystm3": "NA020200",
-                        "overview": "천연 저수지와 습지"
+                        "lclsSystm3": "NA020200"
                     },
                     {
                         "addr1": "경상북도 의성군 안계면 교화길 65-14",
@@ -900,8 +869,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "HS",
                         "lclsSystm2": "HS01",
-                        "lclsSystm3": "HS010900",
-                        "overview": "조선시대 지방 교육기관"
+                        "lclsSystm3": "HS010900"
                     },
                     {
                         "addr1": "경상북도 의성군 신평면 왜가리길 1185",
@@ -928,8 +896,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "NA",
                         "lclsSystm2": "NA04",
-                        "lclsSystm3": "NA040500",
-                        "overview": "왜가리 서식지 생태마을"
+                        "lclsSystm3": "NA040500"
                     },
                     {
                         "addr1": "경상북도 의성군 의성읍 홍술로 65",
@@ -956,8 +923,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "VE",
                         "lclsSystm2": "VE09",
-                        "lclsSystm3": "VE090100",
-                        "overview": "지역문화 전시와 교육공간"
+                        "lclsSystm3": "VE090100"
                     },
                     {
                         "addr1": "경상북도 의성군 봉양면 장대1길 34",
@@ -984,8 +950,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "HS",
                         "lclsSystm2": "HS01",
-                        "lclsSystm3": "HS010900",
-                        "overview": "조선시대 선현 추모 서원"
+                        "lclsSystm3": "HS010900"
                     },
                     {
                         "addr1": "경상북도 의성군 의성읍 북부길 355-22",
@@ -1012,8 +977,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "HS",
                         "lclsSystm2": "HS01",
-                        "lclsSystm3": "HS010800",
-                        "overview": "유학자를 기리는 서원"
+                        "lclsSystm3": "HS010800"
                     },
                     {
                         "addr1": "경상북도 의성군 단밀면 주속길 116-6",
@@ -1040,8 +1004,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "HS",
                         "lclsSystm2": "HS01",
-                        "lclsSystm3": "HS010900",
-                        "overview": "전통 유학 교육 서원"
+                        "lclsSystm3": "HS010900"
                     },
                     {
                         "addr1": "경상북도 의성군 금성면 수정사길 19",
@@ -1068,8 +1031,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "HS",
                         "lclsSystm2": "HS01",
-                        "lclsSystm3": "HS010600",
-                        "overview": "산속 전통문화 체험마을"
+                        "lclsSystm3": "HS010600"
                     },
                     {
                         "addr1": "경상북도 의성군 점곡면 의성길안로 1034",
@@ -1096,8 +1058,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "HS",
                         "lclsSystm2": "HS01",
-                        "lclsSystm3": "HS010400",
-                        "overview": "조선시대 고택과 정원"
+                        "lclsSystm3": "HS010400"
                     },
                     {
                         "addr1": "경상북도 의성군 다인면 대곡사길 80",
@@ -1124,8 +1085,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "HS",
                         "lclsSystm2": "HS03",
-                        "lclsSystm3": "HS030100",
-                        "overview": "깊은 산중 고즈넉한 사찰"
+                        "lclsSystm3": "HS030100"
                     },
                     {
                         "addr1": "경상북도 의성군 사곡면 의성사곡로 1064-62",
@@ -1152,8 +1112,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "VE",
                         "lclsSystm2": "VE03",
-                        "lclsSystm3": "VE030100",
-                        "overview": "야경이 아름다운 공원"
+                        "lclsSystm3": "VE030100"
                     },
                     {
                         "addr1": "경상북도 의성군 점곡면 만취당길 17",
@@ -1180,8 +1139,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "HS",
                         "lclsSystm2": "HS01",
-                        "lclsSystm3": "HS010900",
-                        "overview": "조선시대 문인의 고택"
+                        "lclsSystm3": "HS010900"
                     },
                     {
                         "addr1": "경상북도 의성군 금성면 오층석탑길 5-3",
@@ -1208,8 +1166,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "HS",
                         "lclsSystm2": "HS02",
-                        "lclsSystm3": "HS020100",
-                        "overview": "의성군 대표 관광명소"
+                        "lclsSystm3": "HS020100"
                     },
                     {
                         "addr1": "경상북도 의성군 안계면 안계시장길 30",
@@ -1236,8 +1193,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "EV",
                         "lclsSystm2": "EV01",
-                        "lclsSystm3": "EV010300",
-                        "overview": "의성군 대표 관광명소"
+                        "lclsSystm3": "EV010300"
                     },
                     {
                         "addr1": "경상북도 의성군 의성읍 동서2길 29-1",
@@ -1264,8 +1220,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "FD",
                         "lclsSystm2": "FD01",
-                        "lclsSystm3": "FD010100",
-                        "overview": "지역 특색 맛집"
+                        "lclsSystm3": "FD010100"
                     },
                     {
                         "addr1": "경상북도 의성군 충효로 104 의성종합운동장",
@@ -1292,8 +1247,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "EV",
                         "lclsSystm2": "EV01",
-                        "lclsSystm3": "EV010300",
-                        "overview": "지역 문화 축제 행사"
+                        "lclsSystm3": "EV010300"
                     },
                     {
                         "addr1": "경상북도 의성군 금성면 동부로 2545",
@@ -1320,8 +1274,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "HS",
                         "lclsSystm2": "HS02",
-                        "lclsSystm3": "HS020100",
-                        "overview": "의성군 대표 관광명소"
+                        "lclsSystm3": "HS020100"
                     },
                     {
                         "addr1": "경상북도 의성군 단촌면 고운사길 203-21",
@@ -1348,8 +1301,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "AC",
                         "lclsSystm2": "AC05",
-                        "lclsSystm3": "AC050100",
-                        "overview": "전통문화 체험마을"
+                        "lclsSystm3": "AC050100"
                     },
                     {
                         "addr1": "경상북도 의성군 전통시장3길 7-6",
@@ -1376,8 +1328,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "FD",
                         "lclsSystm2": "FD01",
-                        "lclsSystm3": "FD010100",
-                        "overview": "지역 특색 맛집"
+                        "lclsSystm3": "FD010100"
                     },
                     {
                         "addr1": "경상북도 의성군 용기9길 11",
@@ -1404,8 +1355,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "FD",
                         "lclsSystm2": "FD01",
-                        "lclsSystm3": "FD010100",
-                        "overview": "지역 특색 맛집"
+                        "lclsSystm3": "FD010100"
                     },
                     {
                         "addr1": "경상북도 의성군 춘산면 옥매길 101",
@@ -1432,8 +1382,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "HS",
                         "lclsSystm2": "HS01",
-                        "lclsSystm3": "HS010900",
-                        "overview": "조선시대 교육기관"
+                        "lclsSystm3": "HS010900"
                     },
                     {
                         "addr1": "경상북도 의성군 의성읍",
@@ -1460,8 +1409,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "NA",
                         "lclsSystm2": "NA03",
-                        "lclsSystm3": "NA030200",
-                        "overview": "의성군 대표 관광명소"
+                        "lclsSystm3": "NA030200"
                     },
                     {
                         "addr1": "경상북도 의성군 점곡면 만취당길 12",
@@ -1488,8 +1436,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "NA",
                         "lclsSystm2": "NA03",
-                        "lclsSystm3": "NA030200",
-                        "overview": "의성군 대표 관광명소"
+                        "lclsSystm3": "NA030200"
                     },
                     {
                         "addr1": "경상북도 의성군 의성읍 충효로 88",
@@ -1516,8 +1463,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "VE",
                         "lclsSystm2": "VE06",
-                        "lclsSystm3": "VE060100",
-                        "overview": "의성군 대표 관광명소"
+                        "lclsSystm3": "VE060100"
                     },
                     {
                         "addr1": "경상북도 의성군 안사면 월소3길 62-13",
@@ -1544,8 +1490,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "NA",
                         "lclsSystm2": "NA03",
-                        "lclsSystm3": "NA030200",
-                        "overview": "의성군 대표 관광명소"
+                        "lclsSystm3": "NA030200"
                     },
                     {
                         "addr1": "경상북도 의성군 단밀면 생송리",
@@ -1572,8 +1517,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "VE",
                         "lclsSystm2": "VE03",
-                        "lclsSystm3": "VE030100",
-                        "overview": "의성군 대표 관광명소"
+                        "lclsSystm3": "VE030100"
                     },
                     {
                         "addr1": "경상북도 의성군 금성면 수정사길 19",
@@ -1600,8 +1544,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "NA",
                         "lclsSystm2": "NA04",
-                        "lclsSystm3": "NA040500",
-                        "overview": "등산과 자연경관 명소"
+                        "lclsSystm3": "NA040500"
                     },
                     {
                         "addr1": "경상북도 의성군 의성읍 충효로 88",
@@ -1628,8 +1571,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "LS",
                         "lclsSystm2": "LS01",
-                        "lclsSystm3": "LS010900",
-                        "overview": "의성군 대표 관광명소"
+                        "lclsSystm3": "LS010900"
                     },
                     {
                         "addr1": "경상북도 의성군 점곡면 점곡길 17",
@@ -1656,8 +1598,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "NA",
                         "lclsSystm2": "NA03",
-                        "lclsSystm3": "NA030200",
-                        "overview": "의성군 대표 관광명소"
+                        "lclsSystm3": "NA030200"
                     },
                     {
                         "addr1": "경상북도 의성군 의성읍 구봉길 215-10",
@@ -1684,8 +1625,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "SH",
                         "lclsSystm2": "SH06",
-                        "lclsSystm3": "SH060200",
-                        "overview": "의성군 대표 관광명소"
+                        "lclsSystm3": "SH060200"
                     },
                     {
                         "addr1": "경상북도 의성군 안계면 교화길 59",
@@ -1712,8 +1652,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "EX",
                         "lclsSystm2": "EX03",
-                        "lclsSystm3": "EX030300",
-                        "overview": "전통문화 체험마을"
+                        "lclsSystm3": "EX030300"
                     },
                     {
                         "addr1": "경상북도 의성군 군청길 14-1",
@@ -1740,8 +1679,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "FD",
                         "lclsSystm2": "FD03",
-                        "lclsSystm3": "FD030200",
-                        "overview": "지역 특색 맛집"
+                        "lclsSystm3": "FD030200"
                     },
                     {
                         "addr1": "경상북도 의성군 단북면 안계길 255-13",
@@ -1768,8 +1706,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "VE",
                         "lclsSystm2": "VE02",
-                        "lclsSystm3": "VE020100",
-                        "overview": "의성군 대표 관광명소"
+                        "lclsSystm3": "VE020100"
                     },
                     {
                         "addr1": "경상북도 의성군 동서1길 36",
@@ -1796,8 +1733,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "FD",
                         "lclsSystm2": "FD01",
-                        "lclsSystm3": "FD010100",
-                        "overview": "전통 한옥 고택"
+                        "lclsSystm3": "FD010100"
                     },
                     {
                         "addr1": "경상북도 의성군 탑리1길 47-1",
@@ -1824,8 +1760,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "FD",
                         "lclsSystm2": "FD01",
-                        "lclsSystm3": "FD010100",
-                        "overview": "등산과 자연경관 명소"
+                        "lclsSystm3": "FD010100"
                     },
                     {
                         "addr1": "경상북도 의성군 북부길 342",
@@ -1852,8 +1787,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "FD",
                         "lclsSystm2": "FD01",
-                        "lclsSystm3": "FD010100",
-                        "overview": "전통 한옥 고택"
+                        "lclsSystm3": "FD010100"
                     },
                     {
                         "addr1": "경상북도 의성군 도리원3길 41",
@@ -1880,8 +1814,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "FD",
                         "lclsSystm2": "FD01",
-                        "lclsSystm3": "FD010100",
-                        "overview": "지역 특색 맛집"
+                        "lclsSystm3": "FD010100"
                     },
                     {
                         "addr1": "경상북도 의성군 봉기길 19 봉양 한우마실작목회",
@@ -1908,8 +1841,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "FD",
                         "lclsSystm2": "FD01",
-                        "lclsSystm3": "FD010100",
-                        "overview": "지역 특색 맛집"
+                        "lclsSystm3": "FD010100"
                     },
                     {
                         "addr1": "경상북도 의성군 봉양면 농공마전길 167",
@@ -1936,8 +1868,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "LS",
                         "lclsSystm2": "LS01",
-                        "lclsSystm3": "LS010400",
-                        "overview": "의성군 대표 관광명소"
+                        "lclsSystm3": "LS010400"
                     },
                     {
                         "addr1": "경상북도 의성군 동서2길 16",
@@ -1964,8 +1895,7 @@
                         "lDongSignguCd": "730",
                         "lclsSystm1": "FD",
                         "lclsSystm2": "FD02",
-                        "lclsSystm3": "FD020300",
-                        "overview": "지역 특색 맛집"
+                        "lclsSystm3": "FD020300"
                     }
                 ]
             },

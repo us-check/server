@@ -19,9 +19,34 @@ class GeminiAIService:
         try:
             if settings.GEMINI_API_KEY:
                 genai.configure(api_key=settings.GEMINI_API_KEY)
-                # 최신 Gemini 모델 사용 (gemini-pro 대신 gemini-1.5-flash 또는 gemini-1.5-pro)
-                self.model = genai.GenerativeModel('gemini-2.5-flash')
-                logger.info("Gemini AI initialized successfully with gemini-1.5-flash")
+                
+                # System instruction 설정
+                system_instruction = """
+                당신은 경상북도 의성군 관광지 추천 전문 AI입니다.
+                
+                주요 역할:
+                1. 사용자의 자연어 쿼리를 분석하여 적절한 관광지를 추천
+                2. 의성군의 특색과 문화를 반영한 추천 제공
+                3. 정확하고 유용한 관광 정보 제공
+                
+                의성군 주요 특징:
+                - 마늘과 양파의 고장으로 유명
+                - 조문국 유적지와 역사 문화재 보유
+                - 빙계계곡, 사촌역 은행나무 등 자연 관광지
+                - 전통과 현대가 조화된 관광 도시
+                
+                응답 원칙:
+                - 항상 JSON 형식으로 구조화된 데이터 제공
+                - JSON 입력의 key 순서는 절대 바꾸지 않습니다
+                - 음식점, 숙박, 관광지는 각각 최소 5개 이상 추천
+
+                """
+                
+                self.model = genai.GenerativeModel(
+                    'gemini-2.5-flash',
+                    system_instruction=system_instruction
+                )
+                logger.info("Gemini AI initialized successfully with gemini-2.5-flash and system instruction")
             else:
                 logger.error("GEMINI_API_KEY not found in settings")
                 self.model = None
@@ -136,7 +161,7 @@ class GeminiAIService:
             'gemini_used': False  # Gemini가 사용되지 않았음을 표시
         }
     
-    def recommend_tourism_spots(self, user_query: str, max_results: int = 10) -> Dict:
+    def recommend_tourism_spots(self, user_query: str, max_results: int = 30) -> Dict:
         """사용자 쿼리를 기반으로 관광지 추천"""
         try:
             # 1. 쿼리 분석
@@ -263,7 +288,7 @@ class GeminiAIService:
             # 관광지 정보를 텍스트로 변환
             spots_info = []
             for i, spot in enumerate(spots):
-                spots_info.append(f"{i}: {spot.get('name', '')} - {spot.get('description', '')} ({spot.get('category', '')})")
+                spots_info.append(f"{i}: {spot.get('title', '')} - {spot.get('overview', '')} ({spot.get('category', '')})")
             
             prompt = f"""
             사용자 쿼리: "{user_query}"
@@ -339,10 +364,13 @@ class GeminiAIService:
             # 2. 관광지 필터링 및 순위 매기기
             recommended_spots = self._rank_spots_with_ai(user_query, all_spots, 20)
             
+            # 3. 데이터 정리 (중복 필드 제거)
+            cleaned_spots = [self._clean_spot_data(spot) for spot in recommended_spots[:15]]
+            
             return {
                 'success': True,
                 'analysis': analysis,
-                'recommended_spots': recommended_spots[:15],  # 상위 15개만 반환
+                'recommended_spots': cleaned_spots,
                 'total_analyzed': len(all_spots)
             }
             
@@ -354,3 +382,30 @@ class GeminiAIService:
                 'analysis': {},
                 'recommended_spots': []
             }
+    
+    def _clean_spot_data(self, spot: Dict) -> Dict:
+        """관광지 데이터에서 중복 필드 제거 및 정리"""
+        # 필요한 필드만 선택하여 깔끔한 응답 생성
+        cleaned_spot = {
+            'id': spot.get('id', spot.get('contentid', '')),
+            'title': spot.get('title', ''),
+            'category': spot.get('category', ''),
+            'addr1': spot.get('addr1', ''),
+            'addr2': spot.get('addr2', ''),
+            'overview': spot.get('overview', ''),
+            'tel': spot.get('tel', ''),
+            'homepage': spot.get('homepage', ''),
+            'firstimage': spot.get('firstimage', ''),
+            'firstimage2': spot.get('firstimage2', ''),
+            'latitude': spot.get('latitude', spot.get('mapy', '')),
+            'longitude': spot.get('longitude', spot.get('mapx', '')),
+            'contentid': spot.get('contentid', ''),
+            'contenttypeid': spot.get('contenttypeid', ''),
+            'areacode': spot.get('areacode', ''),
+            'sigungucode': spot.get('sigungucode', ''),
+            'booktour': spot.get('booktour', ''),
+            'tags': spot.get('tags', [])
+        }
+        
+        # 빈 값 제거
+        return {k: v for k, v in cleaned_spot.items() if v is not None and v != ''}
