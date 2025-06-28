@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'corsheaders',
     
     # Custom apps - 모두 Firestore 기반으로 변경
+    'accounts',
     'gemini_ai',
     'qr_service', 
     'api',
@@ -146,6 +147,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Google Cloud Settings
 GOOGLE_APPLICATION_CREDENTIALS = os.environ.get('GOOGLE_APPLICATION_CREDENTIALS')
 GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY')
+
+# Google OAuth 설정
+GOOGLE_OAUTH2_CLIENT_ID = os.getenv('GOOGLE_OAUTH2_CLIENT_ID')
+GOOGLE_OAUTH2_CLIENT_SECRET = os.getenv('GOOGLE_OAUTH2_CLIENT_SECRET')
+GOOGLE_OAUTH2_REDIRECT_URI = os.getenv('GOOGLE_OAUTH2_REDIRECT_URI', 'http://localhost:8000/api/oauth/google/callback/')
 
 # Firestore Settings
 FIRESTORE_PROJECT_ID = os.environ.get('FIRESTORE_PROJECT_ID', 'gen-lang-client-0000121060')

@@ -24,7 +24,7 @@ urlpatterns = [
     
     # API 엔드포인트
     path('api/', include('api.urls')),
-    
+    path('api/oauth/', include('api.oauth_urls')),  # OAuth 관련 URL
     # 각 앱별 URL (필요시 추가)
     # path('tourism/', include('tourism.urls')),
     # path('gemini/', include('gemini_ai.urls')),
